@@ -11,6 +11,9 @@ const signToken = (id) => {
 }
 
 exports.signup = catchAsync(async (req, res, next) => {
+  if (Object.keys(req.body).length === 0)
+    return next(new AppError("Bad request", 400))
+
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -30,6 +33,9 @@ exports.signup = catchAsync(async (req, res, next) => {
 })
 
 exports.signin = catchAsync(async (req, res, next) => {
+  if (Object.keys(req.body).length === 0)
+    return next(new AppError("Bad request", 400))
+
   const { email, password } = req.body
 
   if (!email || !password) {

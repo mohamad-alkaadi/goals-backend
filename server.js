@@ -7,4 +7,5 @@ const dbUri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWOR
 connectToMongoDB(dbUri)
 
 const port = process.env.PORT || 3000
+
 app.listen(port, () => [console.log(`server is running on port ${port}`)])
