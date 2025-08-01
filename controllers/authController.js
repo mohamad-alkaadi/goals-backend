@@ -33,6 +33,8 @@ exports.signup = catchAsync(async (req, res, next) => {
 })
 
 exports.signin = catchAsync(async (req, res, next) => {
+  console.log(req.body)
+
   if (Object.keys(req.body).length === 0)
     return next(new AppError("Bad request", 400))
 

@@ -1,6 +1,7 @@
 const express = require("express")
 const app = express()
 app.use(express.json())
+
 const userRoutes = require("./routes/userRoutes")
 const testRoutes = require("./routes/testRoutes")
 const goalsRoutes = require("./routes/goalsRoutes")

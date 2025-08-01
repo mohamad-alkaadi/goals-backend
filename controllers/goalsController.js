@@ -17,6 +17,12 @@ exports.createNewGoal = catchAsync(async (req, res, next) => {
   })
 })
 
-// exports.getAllTodos = catchAsync(async (req, res, next) => {
-//   const goals = await goalsModel.find({userId: req.user._id})
-// })
+exports.getAllTodos = catchAsync(async (req, res, next) => {
+   const goals = await goalsModel.find({userId: req.user._id})
+   res.status(200).json({
+       status:"succes",
+        data: {goals}
+    })
+})
+
+
