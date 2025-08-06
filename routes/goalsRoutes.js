@@ -4,6 +4,11 @@ const goalsController = require("../controllers/goalsController")
 const authController = require("../controllers/authController")
 const router = express.Router()
 
-router.post("/", authController.protect, goalsController.createNewGoal)
-router.get("/", authController.protect, goalsController.getAllTodos )
+router.route("/")
+      .post(authController.protect, goalsController.createNewGoal)
+      .get(authController.protect, goalsController.getAllTodos )
+
+router.route("/:id")
+      .patch(authController.protect, goalsController.updateGoal)
+	  .get(authController.protect, goalsController.getGoal)
 module.exports = router

@@ -14,6 +14,10 @@ const goalsSchema = new mongoose.Schema({
     type: String,
     default: "unsorted",
   },
+  compleated:{
+    type: Boolean,
+    default: false
+  },
   userId: {
     type: String,
     required: [true, "you can't add a goal without user id"],
