@@ -26,15 +26,11 @@ exports.signup = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: "success",
     token,
-    data: {
-      user: newUser,
-    },
+    data: newUser,
   })
 })
 
 exports.signin = catchAsync(async (req, res, next) => {
-  console.log(req.body)
-
   if (Object.keys(req.body).length === 0)
     return next(new AppError("Bad request", 400))
 

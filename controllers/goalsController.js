@@ -3,7 +3,6 @@ const goalsTypeModel = require("../models/goalsTypeModel")
 const catchAsync = require("../utils/catchAsync")
 
 exports.createNewGoal = catchAsync(async (req, res, next) => {
-
   req.body.userId = req.user._id
   await goalsTypeModel.findOneAndUpdate(
     { name: req.body.goalType },
@@ -12,34 +11,35 @@ exports.createNewGoal = catchAsync(async (req, res, next) => {
   const newGoal = await goalsModel.create(req.body)
   res.status(200).json({
     status: "success",
-    data:  newGoal ,
+    data: newGoal,
   })
 })
 
 exports.getAllTodos = catchAsync(async (req, res, next) => {
-   const goals = await goalsModel.find({userId: req.user._id})
-   res.status(200).json({
-       status:"succes",
-        data: goals
-    })
+  const goals = await goalsModel.find({ userId: req.user._id })
+  res.status(200).json({
+    status: "success",
+    data: goals,
+  })
 })
 
 exports.updateGoal = catchAsync(async (req, res, next) => {
-	const updatedGoal = await goalsModel.findOneAndUpdate(
-        {_id: req.params.id},
-        req.body,   
-        { new: true, runValidators: true })
-	
-    res.status(200).json({
-        status: "sucess",
-        data: updatedGoal
-    })
+  const updatedGoal = await goalsModel.findOneAndUpdate(
+    { _id: req.params.id },
+    req.body,
+    { new: true, runValidators: true }
+  )
+
+  res.status(200).json({
+    status: "success",
+    data: updatedGoal,
+  })
 })
 
 exports.getGoal = catchAsync(async (req, res, next) => {
-	const goal = await goalsModel.findById(req.params.id)
-    res.status(200).json({
-		status: "success",
-        data: goal
-    })
+  const goal = await goalsModel.findById(req.params.id)
+  res.status(200).json({
+    status: "success",
+    data: goal,
+  })
 })

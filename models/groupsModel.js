@@ -1,9 +1,8 @@
 const mongoose = require("mongoose")
 
-const goalsTypeSchema = new mongoose.Schema({
+const groupsSchema = mongoose.Schema({
   name: {
     type: String,
-    maxLength: 30,
     default: "ungrouped",
   },
   userId: {
@@ -12,7 +11,6 @@ const goalsTypeSchema = new mongoose.Schema({
     select: false,
   },
 })
+const Groups = mongoose.model("Goals", groupsSchema)
 
-const GoalsTypeModel = mongoose.model("GoalsType", goalsTypeSchema)
-
-module.exports = GoalsTypeModel
+module.exports = Groups

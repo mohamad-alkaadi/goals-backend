@@ -14,9 +14,25 @@ const goalsSchema = new mongoose.Schema({
     type: String,
     default: "unsorted",
   },
-  compleated:{
+  data: {
+    type: Date,
+    default: Date.now(),
+  },
+  dueDateActive: {
+    type: String,
+    default: false,
+  },
+  dueDate: {
+    type: Date,
+    default: Date.now(),
+  },
+  completed: {
     type: Boolean,
-    default: false
+    default: false,
+  },
+  groupId: {
+    type: String,
+    default: "ungrouped",
   },
   userId: {
     type: String,
