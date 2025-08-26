@@ -11,6 +11,6 @@ const groupsSchema = mongoose.Schema({
     select: false,
   },
 })
-const Groups = mongoose.model("Goals", groupsSchema)
 
-module.exports = Groups
+module.exports =
+  mongoose.models.Groups || mongoose.model("Groups", groupsSchema)

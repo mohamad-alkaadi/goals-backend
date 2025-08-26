@@ -1,13 +1,12 @@
 const goalsModel = require("../models/goalsModel")
-const goalsTypeModel = require("../models/goalsTypeModel")
 const catchAsync = require("../utils/catchAsync")
+const groupUtils = require("../utils/groupUtils.js")
+const goalsUtils = require("../utils/goalsUtils.js")
 
 exports.createNewGoal = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-  await goalsTypeModel.findOneAndUpdate(
-    { name: req.body.goalType },
-    { upsert: true, new: true }
-  )
+  req.body.groupId = await groupUtils.findOrCreateGroup(req)
+
   const newGoal = await goalsModel.create(req.body)
   res.status(200).json({
     status: "success",
@@ -15,7 +14,8 @@ exports.createNewGoal = catchAsync(async (req, res, next) => {
   })
 })
 
-exports.getAllTodos = catchAsync(async (req, res, next) => {
+exports.getAllGoals = catchAsync(async (req, res, next) => {
+  await goalsUtils.checkForDueDate(req)
   const goals = await goalsModel.find({ userId: req.user._id })
   res.status(200).json({
     status: "success",

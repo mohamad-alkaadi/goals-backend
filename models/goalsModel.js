@@ -10,10 +10,6 @@ const goalsSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  goalType: {
-    type: String,
-    default: "unsorted",
-  },
   data: {
     type: Date,
     default: Date.now(),
@@ -26,9 +22,25 @@ const goalsSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  overDue: {
+    type: Boolean,
+    default: false,
+  },
   completed: {
     type: Boolean,
     default: false,
+  },
+  favorite: {
+    type: Boolean,
+    default: false,
+  },
+  shared: {
+    type: Boolean,
+    default: false,
+  },
+  groupName: {
+    type: String,
+    default: "ungrouped",
   },
   groupId: {
     type: String,
