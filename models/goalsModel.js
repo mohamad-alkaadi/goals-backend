@@ -15,7 +15,7 @@ const goalsSchema = new mongoose.Schema({
     default: Date.now(),
   },
   dueDateActive: {
-    type: String,
+    type: Boolean,
     default: false,
   },
   dueDate: {
