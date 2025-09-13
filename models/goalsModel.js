@@ -30,6 +30,10 @@ const goalsSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  completedAt: {
+    type: Date,
+    default: Date.now(),
+  },
   favorite: {
     type: Boolean,
     default: false,
@@ -37,6 +41,10 @@ const goalsSchema = new mongoose.Schema({
   shared: {
     type: Boolean,
     default: false,
+  },
+  sharedWith: {
+    type: [String],
+    default: [],
   },
   groupName: {
     type: String,
@@ -46,6 +54,7 @@ const goalsSchema = new mongoose.Schema({
     type: String,
     default: "ungrouped",
   },
+
   userId: {
     type: String,
     required: [true, "you can't add a goal without user id"],

@@ -32,6 +32,7 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: {
     type: Date,
   },
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 })
 
 userSchema.pre("save", async function (next) {
