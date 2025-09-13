@@ -1,6 +1,7 @@
 const User = require("../models/userModel")
 const FriendRequest = require("../models/friendRequestsModel")
 const catchAsync = require("../utils/catchAsync")
+const friendsUtils = require("../utils/friendsUtils")
 
 exports.getAllFriends = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id)
@@ -16,27 +17,9 @@ exports.getAllFriends = catchAsync(async (req, res, next) => {
 exports.addFriend = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
 
-  const toUserId = await User.findOne({ email: req.body.email })
-  if (!toUserId) {
-    res.status(400).json({
-      status: "fail",
-      message: "no user with this email",
-    })
-  }
+  const toUserId = await friendsUtils.findUserByEmail(req.body.email)
 
-  const existingRequest = await FriendRequest.findOne({
-    $or: [
-      { from: req.body.userId, to: toUserId._id.toString() },
-      { to: req.body.userId, from: toUserId._id.toString() },
-    ],
-  })
-  if (existingRequest) {
-    res.status(400).json({
-      status: "fail",
-      message: "A friend request already exists between these users",
-    })
-  }
-
+  await friendsUtils.checkForExistingRequest(req.body.userId)
   await FriendRequest.create({
     from: req.body.userId,
     to: toUserId._id.toString(),
@@ -47,12 +30,9 @@ exports.addFriend = catchAsync(async (req, res, next) => {
   })
 })
 
-exports.getFriendRequests = catchAsync(async (req, res, next) => {
+exports.getAllFriendRequests = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-  const friendRequests = await FriendRequest.find(
-    { to: req.body.userId },
-    { from }
-  )
+  const friendRequests = await FriendRequest.find({ to: req.body.userId })
     .populate("from", "name")
     .lean()
 
