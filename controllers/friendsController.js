@@ -47,16 +47,18 @@ exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
 
   await FriendRequest.findOneAndDelete({
     from: req.body.from,
-    to: req.userId,
+    to: req.body.userId,
   })
   await User.findByIdAndUpdate(req.body.userId, {
     $addToSet: { friends: req.body.from },
   })
-  await User.findByIdAndUpdate(req.from, {
+  await User.findByIdAndUpdate(req.body.from, {
     $addToSet: { friends: req.body.userId },
   })
+
   res.status(200).json({
     status: "success",
+    message: "Friend accepted",
   })
 })
 
@@ -64,7 +66,7 @@ exports.rejectFriendRequest = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
   await FriendRequest.findOneAndDelete({
     from: req.body.from,
-    to: req.userId,
+    to: req.body.userId,
   })
 
   res.status(200).json({
