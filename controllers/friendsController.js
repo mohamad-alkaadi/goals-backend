@@ -16,9 +16,7 @@ exports.getAllFriends = catchAsync(async (req, res, next) => {
 
 exports.addFriend = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-
   const toUserId = await friendsUtils.findUserByEmail(req.body.email)
-
   await friendsUtils.checkForExistingRequest(req.body.userId)
   await FriendRequest.create({
     from: req.body.userId,
@@ -49,13 +47,7 @@ exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
     from: req.body.from,
     to: req.body.userId,
   })
-  await User.findByIdAndUpdate(req.body.userId, {
-    $addToSet: { friends: req.body.from },
-  })
-  await User.findByIdAndUpdate(req.body.from, {
-    $addToSet: { friends: req.body.userId },
-  })
-
+  await friendsUtils.addFriendBothWays(req.body.userId, req.body.from)
   res.status(200).json({
     status: "success",
     message: "Friend accepted",
@@ -73,11 +65,10 @@ exports.rejectFriendRequest = catchAsync(async (req, res, next) => {
     status: "success",
   })
 })
+
 exports.deleteFriend = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-  await User.findByIdAndUpdate(req.body.userId, {
-    $pull: { friends: req.body.friendId },
-  })
+  await friendsUtils.deleteFriendBothWays(req.body.userId, req.body.friendId)
   res.status(200).json({
     status: "success",
   })

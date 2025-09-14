@@ -26,3 +26,21 @@ exports.checkForExistingRequest = async (userOne, userTwo, res) => {
     })
   }
 }
+
+exports.addFriendBothWays = async (user1, user2) => {
+  await User.findByIdAndUpdate(user1, {
+    $addToSet: { friends: user2 },
+  })
+  await User.findByIdAndUpdate(user2, {
+    $addToSet: { friends: user1 },
+  })
+}
+
+exports.deleteFriendBothWays = async (user1, user2) => {
+  await User.findByIdAndUpdate(user1, {
+    $pull: { friends: user2 },
+  })
+  await User.findByIdAndUpdate(user2, {
+    $pull: { friends: user1 },
+  })
+}
