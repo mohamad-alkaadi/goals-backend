@@ -2,16 +2,14 @@ const User = require("../models/userModel")
 const FriendRequest = require("../models/friendRequestsModel")
 const catchAsync = require("../utils/catchAsync")
 const friendsUtils = require("../utils/friendsUtils")
+const resUtils = require("../utils/resUtils")
 
 exports.getAllFriends = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id)
     .populate("friends", "name")
     .lean()
 
-  res.status(200).json({
-    status: "success",
-    data: user.friends,
-  })
+  resUtils.sendResponseWithData(res, 200, "success", user.friends)
 })
 
 exports.addFriend = catchAsync(async (req, res, next) => {
@@ -22,10 +20,13 @@ exports.addFriend = catchAsync(async (req, res, next) => {
     from: req.body.userId,
     to: toUserId._id.toString(),
   })
-  res.status(200).json({
-    status: "success",
-    message: "Friend request sent successfully",
-  })
+
+  resUtils.sendResponseWithoutData(
+    res,
+    200,
+    "success",
+    "Friend request sent successfully"
+  )
 })
 
 exports.getAllFriendRequests = catchAsync(async (req, res, next) => {
@@ -34,24 +35,18 @@ exports.getAllFriendRequests = catchAsync(async (req, res, next) => {
     .populate("from", "name")
     .lean()
 
-  res.status(200).json({
-    status: "success",
-    data: friendRequests,
-  })
+  resUtils.sendResponseWithData(res, 200, "success", friendRequests)
 })
 
 exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-
   await FriendRequest.findOneAndDelete({
     from: req.body.from,
     to: req.body.userId,
   })
   await friendsUtils.addFriendBothWays(req.body.userId, req.body.from)
-  res.status(200).json({
-    status: "success",
-    message: "Friend accepted",
-  })
+
+  resUtils.sendResponseWithoutData(res, 200, "success", "Friend accepted")
 })
 
 exports.rejectFriendRequest = catchAsync(async (req, res, next) => {
@@ -61,15 +56,12 @@ exports.rejectFriendRequest = catchAsync(async (req, res, next) => {
     to: req.body.userId,
   })
 
-  res.status(200).json({
-    status: "success",
-  })
+  resUtils.sendResponseWithoutData(res, 200, "success", "Friend rejected")
 })
 
 exports.deleteFriend = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
   await friendsUtils.deleteFriendBothWays(req.body.userId, req.body.friendId)
-  res.status(200).json({
-    status: "success",
-  })
+
+  resUtils.sendResponseWithoutData(res, 200, "success", "Friend deleted")
 })
