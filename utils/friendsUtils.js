@@ -13,16 +13,24 @@ exports.findUserByEmail = async (email, res) => {
 }
 
 exports.checkForExistingRequest = async (userOne, userTwo, res) => {
-  const existingRequest = await FriendRequest.findOne({
-    $or: [
-      { from: userOne, to: userTwo },
-      { to: userOne, from: userTwo },
-    ],
+  const requestAlreadySent = await FriendRequest.findOne({
+    from: userOne,
+    to: userTwo,
   })
-  if (existingRequest) {
+  if (requestAlreadySent) {
     res.status(400).json({
       status: "fail",
-      message: "A friend request already exists between these users",
+      message: "request already sent",
+    })
+  }
+  const requestAlreadyReceived = await FriendRequest.findOne({
+    from: userOne,
+    to: userTwo,
+  })
+  if (requestAlreadyReceived) {
+    res.status(400).json({
+      status: "fail",
+      message: "request already received",
     })
   }
 }
@@ -43,4 +51,23 @@ exports.deleteFriendBothWays = async (user1, user2) => {
   await User.findByIdAndUpdate(user2, {
     $pull: { friends: user1 },
   })
+}
+
+exports.checkIfFriendshipExists = async (res, userOne, userTwo) => {
+  console.log("userOne:", userOne)
+  console.log("userTwo:", userTwo)
+
+  const existingFriendship = await FriendRequest.findOne({
+    $or: [
+      { from: userOne, to: userTwo },
+      { to: userOne, from: userTwo },
+    ],
+    status: "accepted",
+  })
+  if (existingFriendship) {
+    res.status(400).json({
+      status: "fail",
+      message: "you are already friends",
+    })
+  }
 }

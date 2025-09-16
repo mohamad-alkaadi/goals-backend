@@ -15,6 +15,7 @@ exports.getAllFriends = catchAsync(async (req, res, next) => {
 exports.addFriend = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
   const toUserId = await friendsUtils.findUserByEmail(req.body.email)
+  await friendsUtils.checkIfFriendshipExists(res, req.body.userId, toUserId)
   await friendsUtils.checkForExistingRequest(req.body.userId)
   await FriendRequest.create({
     from: req.body.userId,
@@ -25,7 +26,7 @@ exports.addFriend = catchAsync(async (req, res, next) => {
     res,
     200,
     "success",
-    "Friend request sent successfully"
+    "friend request sent successfully"
   )
 })
 
@@ -40,10 +41,13 @@ exports.getAllFriendRequests = catchAsync(async (req, res, next) => {
 
 exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-  await FriendRequest.findOneAndDelete({
-    from: req.body.from,
-    to: req.body.userId,
-  })
+  await FriendRequest.findOneAndUpdate(
+    {
+      from: req.body.from,
+      to: req.body.userId,
+    },
+    { status: "accepted" }
+  )
   await friendsUtils.addFriendBothWays(req.body.userId, req.body.from)
 
   resUtils.sendResponseWithoutData(res, 200, "success", "Friend accepted")
