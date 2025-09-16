@@ -1,13 +1,16 @@
 const User = require("../models/userModel")
 const FriendRequest = require("../models/friendRequestsModel")
+const resUtils = require("../utils/resUtils")
 
 exports.findUserByEmail = async (email, res) => {
   const userId = await User.findOne({ email: email })
   if (!userId) {
-    res.status(400).json({
-      status: "fail",
-      message: "no user with this email",
-    })
+    resUtils.sendResponseWithoutData(
+      res,
+      400,
+      "fail",
+      "no user with this email"
+    )
   }
   return userId
 }
@@ -18,20 +21,19 @@ exports.checkForExistingRequest = async (userOne, userTwo, res) => {
     to: userTwo,
   })
   if (requestAlreadySent) {
-    res.status(400).json({
-      status: "fail",
-      message: "request already sent",
-    })
+    resUtils.sendResponseWithoutData(res, 400, "fail", "request already sent")
   }
   const requestAlreadyReceived = await FriendRequest.findOne({
     from: userOne,
     to: userTwo,
   })
   if (requestAlreadyReceived) {
-    res.status(400).json({
-      status: "fail",
-      message: "request already received",
-    })
+    resUtils.sendResponseWithoutData(
+      res,
+      400,
+      "fail",
+      "request already received"
+    )
   }
 }
 
@@ -54,9 +56,6 @@ exports.deleteFriendBothWays = async (user1, user2) => {
 }
 
 exports.checkIfFriendshipExists = async (res, userOne, userTwo) => {
-  console.log("userOne:", userOne)
-  console.log("userTwo:", userTwo)
-
   const existingFriendship = await FriendRequest.findOne({
     $or: [
       { from: userOne, to: userTwo },
@@ -65,9 +64,11 @@ exports.checkIfFriendshipExists = async (res, userOne, userTwo) => {
     status: "accepted",
   })
   if (existingFriendship) {
-    res.status(400).json({
-      status: "fail",
-      message: "you are already friends",
-    })
+    resUtils.sendResponseWithoutData(
+      res,
+      400,
+      "fail",
+      "you are already friends"
+    )
   }
 }
