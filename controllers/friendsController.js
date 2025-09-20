@@ -14,9 +14,10 @@ exports.getAllFriends = catchAsync(async (req, res, next) => {
 
 exports.addFriend = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-  const toUserId = await friendsUtils.findUserByEmail(req.body.email)
+  const toUserId = await friendsUtils.findUserByEmail(res, req.body.email)
   await friendsUtils.checkIfFriendshipExists(res, req.body.userId, toUserId)
-  await friendsUtils.checkForExistingRequest(req.body.userId)
+  await friendsUtils.checkForExistingRequest(res, req.body.userId, toUserId)
+
   await FriendRequest.create({
     from: req.body.userId,
     to: toUserId._id.toString(),
