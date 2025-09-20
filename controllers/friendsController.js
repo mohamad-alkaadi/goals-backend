@@ -15,13 +15,28 @@ exports.getAllFriends = catchAsync(async (req, res, next) => {
 exports.addFriend = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
   const toUserId = await friendsUtils.findUserByEmail(res, req.body.email)
-  await friendsUtils.checkIfFriendshipExists(res, req.body.userId, toUserId)
-  await friendsUtils.checkForExistingRequest(res, req.body.userId, toUserId)
+  if (!toUserId) return
+
+  const checkFriend = await friendsUtils.checkIfFriendshipExists(
+    res,
+    req.body.userId,
+    toUserId
+  )
+  if (!checkFriend) return
+  const checkRequest = await friendsUtils.checkForExistingRequest(
+    res,
+    req.body.userId,
+    toUserId
+  )
+  if (!checkRequest) return
+
+  console.log("before create")
 
   await FriendRequest.create({
     from: req.body.userId,
     to: toUserId._id.toString(),
   })
+  console.log("after create")
 
   resUtils.sendResponseWithoutData(
     res,
@@ -33,11 +48,14 @@ exports.addFriend = catchAsync(async (req, res, next) => {
 
 exports.getAllFriendRequests = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-  const friendRequests = await FriendRequest.find({ to: req.body.userId })
-    .populate("from", "name")
-    .lean()
 
-  resUtils.sendResponseWithData(res, 200, "success", friendRequests)
+  const { friendRequests, pendingRequests } =
+    await friendsUtils.getSentAndReceivedFriendRequests(req.body.userId)
+
+  resUtils.sendResponseWithData(res, 200, "success", {
+    friendRequests: friendRequests,
+    pendingRequests: pendingRequests,
+  })
 })
 
 exports.acceptFriendRequest = catchAsync(async (req, res, next) => {

@@ -11,6 +11,7 @@ exports.findUserByEmail = async (res, email) => {
       "fail",
       "no user with this email"
     )
+    return false
   }
   return userId
 }
@@ -27,6 +28,7 @@ exports.checkForExistingRequest = async (res, userOne, userTwo) => {
       "fail",
       "request already sent"
     )
+    return false
   }
 
   const requestAlreadyReceived = await FriendRequest.findOne({
@@ -40,6 +42,7 @@ exports.checkForExistingRequest = async (res, userOne, userTwo) => {
       "fail",
       "request already received"
     )
+    return false
   }
 }
 
@@ -69,7 +72,6 @@ exports.checkIfFriendshipExists = async (res, userOne, userTwo) => {
     ],
     status: "accepted",
   })
-  console.log("existingFriendship:", existingFriendship)
 
   if (existingFriendship) {
     await resUtils.sendResponseWithoutData(
@@ -78,5 +80,22 @@ exports.checkIfFriendshipExists = async (res, userOne, userTwo) => {
       "fail",
       "you are already friends"
     )
+    return false
   }
+}
+
+exports.getSentAndReceivedFriendRequests = async (userId) => {
+  const friendRequests = await FriendRequest.find({
+    to: userId,
+    status: "pending",
+  })
+    .populate("from", "name")
+    .lean()
+  const pendingRequests = await FriendRequest.find({
+    from: userId,
+    status: "pending",
+  })
+    .populate("from", "name")
+    .lean()
+  return { friendRequests, pendingRequests }
 }
