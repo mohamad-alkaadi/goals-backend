@@ -90,12 +90,14 @@ exports.getSentAndReceivedFriendRequests = async (userId) => {
     status: "pending",
   })
     .populate("from", "name")
+    .populate("to", "name")
     .lean()
   const pendingRequests = await FriendRequest.find({
     from: userId,
     status: "pending",
   })
     .populate("from", "name")
+    .populate("to", "name")
     .lean()
   return { friendRequests, pendingRequests }
 }

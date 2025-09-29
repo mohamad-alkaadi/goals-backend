@@ -16,7 +16,6 @@ exports.addFriend = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
   const toUserId = await friendsUtils.findUserByEmail(res, req.body.email)
   if (!toUserId) return
-
   const checkFriend = await friendsUtils.checkIfFriendshipExists(
     res,
     req.body.userId,
@@ -29,15 +28,10 @@ exports.addFriend = catchAsync(async (req, res, next) => {
     toUserId
   )
   if (!checkRequest) return
-
-  console.log("before create")
-
   await FriendRequest.create({
     from: req.body.userId,
     to: toUserId._id.toString(),
   })
-  console.log("after create")
-
   resUtils.sendResponseWithoutData(
     res,
     200,
