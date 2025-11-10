@@ -21,13 +21,13 @@ exports.addFriend = catchAsync(async (req, res, next) => {
     req.body.userId,
     toUserId
   )
-  if (!checkFriend) return
+  if (checkFriend) return
   const checkRequest = await friendsUtils.checkForExistingRequest(
     res,
     req.body.userId,
     toUserId
   )
-  if (!checkRequest) return
+  if (checkRequest) return
   await FriendRequest.create({
     from: req.body.userId,
     to: toUserId._id.toString(),
