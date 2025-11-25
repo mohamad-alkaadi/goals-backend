@@ -8,8 +8,15 @@ exports.getAllFriends = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id)
     .populate("friends", "name")
     .lean()
-
-  resUtils.sendResponseWithData(res, 200, "success", user.friends)
+  
+  const { receivedFriendRequests, sentFriendRequests } =
+    await friendsUtils.getSentAndReceivedFriendRequests(req.user._id)
+  
+  resUtils.sendResponseWithData(res, 200, "success", {
+    friends:user.friends,
+    received:receivedFriendRequests, 
+    sent:sentFriendRequests
+  })
 })
 
 exports.addFriend = catchAsync(async (req, res, next) => {
@@ -43,12 +50,12 @@ exports.addFriend = catchAsync(async (req, res, next) => {
 exports.getAllFriendRequests = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
 
-  const { friendRequests, pendingRequests } =
+  const {  receivedFriendRequests, sentFriendRequests} =
     await friendsUtils.getSentAndReceivedFriendRequests(req.body.userId)
 
   resUtils.sendResponseWithData(res, 200, "success", {
-    friendRequests: friendRequests,
-    pendingRequests: pendingRequests,
+    received: receivedFriendRequests,
+    sent: sentFriendRequests,
   })
 })
 

@@ -85,19 +85,32 @@ exports.checkIfFriendshipExists = async (res, userOne, userTwo) => {
 }
 
 exports.getSentAndReceivedFriendRequests = async (userId) => {
-  const friendRequests = await FriendRequest.find({
+  const receivedFriendRequestsRaw = await FriendRequest.find({
     to: userId,
     status: "pending",
   })
     .populate("from", "name")
     .populate("to", "name")
     .lean()
-  const pendingRequests = await FriendRequest.find({
+    .select("from")
+  
+  const receivedFriendRequests = receivedFriendRequestsRaw.map(req => {
+    return {_id:req.from._id.toString(), name:req.from.name}
+  })
+
+    const sentFriendRequestsRaw = await FriendRequest.find({
     from: userId,
     status: "pending",
   })
     .populate("from", "name")
     .populate("to", "name")
     .lean()
-  return { friendRequests, pendingRequests }
+    .select("to")
+
+
+  const sentFriendRequests = sentFriendRequestsRaw.map(req => {
+    return {_id:req.to._id.toString(), name:req.to.name}
+  })
+  
+  return { receivedFriendRequests, sentFriendRequests }
 }
