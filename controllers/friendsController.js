@@ -1,91 +1,102 @@
-const User = require("../models/userModel")
-const FriendRequest = require("../models/friendRequestsModel")
-const catchAsync = require("../utils/catchAsync")
-const friendsUtils = require("../utils/friendsUtils")
-const resUtils = require("../utils/resUtils")
+const User = require("../models/userModel");
+const FriendRequest = require("../models/friendRequestsModel");
+const catchAsync = require("../utils/catchAsync");
+const friendsUtils = require("../utils/friendsUtils");
+const resUtils = require("../utils/resUtils");
 
-exports.getAllFriends = catchAsync(async (req, res, next) => {
+exports.getAllFriendsWithRequests = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user._id)
     .populate("friends", "name")
-    .lean()
-  
+    .lean();
+
   const { receivedFriendRequests, sentFriendRequests } =
-    await friendsUtils.getSentAndReceivedFriendRequests(req.user._id)
-  
+    await friendsUtils.getSentAndReceivedFriendRequests(req.user._id);
+
   resUtils.sendResponseWithData(res, 200, "success", {
-    friends:user.friends,
-    received:receivedFriendRequests, 
-    sent:sentFriendRequests
-  })
-})
+    friends: user.friends,
+    received: receivedFriendRequests,
+    sent: sentFriendRequests,
+  });
+});
 
 exports.addFriend = catchAsync(async (req, res, next) => {
-  req.body.userId = req.user._id
-  const toUserId = await friendsUtils.findUserByEmail(res, req.body.email)
-  if (!toUserId) return
+  req.body.userId = req.user._id;
+  const toUserId = await friendsUtils.findUserByEmail(res, req.body.email);
+  if (!toUserId) return;
+  if (req.body.userId === toUserId) return;
   const checkFriend = await friendsUtils.checkIfFriendshipExists(
     res,
     req.body.userId,
     toUserId
-  )
-  if (checkFriend) return
+  );
+  if (checkFriend) return;
   const checkRequest = await friendsUtils.checkForExistingRequest(
     res,
     req.body.userId,
     toUserId
-  )
-  if (checkRequest) return
+  );
+  if (checkRequest) return;
   await FriendRequest.create({
     from: req.body.userId,
     to: toUserId._id.toString(),
-  })
+  });
   resUtils.sendResponseWithoutData(
     res,
     200,
     "success",
     "friend request sent successfully"
-  )
-})
+  );
+});
 
 exports.getAllFriendRequests = catchAsync(async (req, res, next) => {
-  req.body.userId = req.user._id
+  req.body.userId = req.user._id;
 
-  const {  receivedFriendRequests, sentFriendRequests} =
-    await friendsUtils.getSentAndReceivedFriendRequests(req.body.userId)
+  const { receivedFriendRequests, sentFriendRequests } =
+    await friendsUtils.getSentAndReceivedFriendRequests(req.body.userId);
 
   resUtils.sendResponseWithData(res, 200, "success", {
     received: receivedFriendRequests,
     sent: sentFriendRequests,
-  })
-})
+  });
+});
 
 exports.acceptFriendRequest = catchAsync(async (req, res, next) => {
-  req.body.userId = req.user._id
+  req.body.userId = req.user._id;
   await FriendRequest.findOneAndUpdate(
     {
       from: req.body.from,
       to: req.body.userId,
     },
     { status: "accepted" }
-  )
-  await friendsUtils.addFriendBothWays(req.body.userId, req.body.from)
+  );
+  await friendsUtils.addFriendBothWays(req.body.userId, req.body.from);
 
-  resUtils.sendResponseWithoutData(res, 200, "success", "Friend accepted")
-})
+  resUtils.sendResponseWithoutData(res, 200, "success", "Friend accepted");
+});
 
 exports.rejectFriendRequest = catchAsync(async (req, res, next) => {
-  req.body.userId = req.user._id
+  req.body.userId = req.user._id;
   await FriendRequest.findOneAndDelete({
     from: req.body.from,
     to: req.body.userId,
-  })
+  });
 
-  resUtils.sendResponseWithoutData(res, 200, "success", "Friend rejected")
-})
+  resUtils.sendResponseWithoutData(res, 200, "success", "Friend rejected");
+});
+
+exports.cancelFriendRequest = catchAsync(async (req, res, next) => {
+  req.body.userId = req.user._id;
+  await FriendRequest.findOneAndDelete({
+    from: req.body.userId,
+    to: req.body.from,
+  });
+
+  resUtils.sendResponseWithoutData(res, 200, "success", "Friend rejected");
+});
 
 exports.deleteFriend = catchAsync(async (req, res, next) => {
-  req.body.userId = req.user._id
-  await friendsUtils.deleteFriendBothWays(req.body.userId, req.body.friendId)
+  req.body.userId = req.user._id;
+  await friendsUtils.deleteFriendBothWays(req.body.userId, req.body.friendId);
 
-  resUtils.sendResponseWithoutData(res, 200, "success", "Friend deleted")
-})
+  resUtils.sendResponseWithoutData(res, 200, "success", "Friend deleted");
+});
