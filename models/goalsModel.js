@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const goalsSchema = new mongoose.Schema({
   title: {
@@ -10,7 +10,7 @@ const goalsSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
-  data: {
+  date: {
     type: Date,
     default: Date.now(),
   },
@@ -60,8 +60,8 @@ const goalsSchema = new mongoose.Schema({
     required: [true, "you can't add a goal without user id"],
     select: false,
   },
-})
+});
 
-const Goals = mongoose.model("Goals", goalsSchema)
+const Goals = mongoose.model("Goals", goalsSchema);
 
-module.exports = Goals
+module.exports = Goals;
