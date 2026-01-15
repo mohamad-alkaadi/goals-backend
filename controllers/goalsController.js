@@ -6,8 +6,13 @@ const goalsUtils = require("../utils/goalsUtils.js")
 exports.createNewGoal = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
   req.body.groupId = await groupUtils.findOrCreateGroup(req)
-
   const newGoal = await goalsModel.create(req.body)
+  if (req.body.shared) {
+    const tempId = req.body.userId
+    req.body.userId = req.body.sharedWith
+    req.body.sharedWith = tempId
+    await goalsModel.create(req.body)
+  }
   res.status(200).json({
     status: "success",
     data: newGoal,

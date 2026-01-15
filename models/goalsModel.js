@@ -43,8 +43,8 @@ const goalsSchema = new mongoose.Schema({
     default: false,
   },
   sharedWith: {
-    type: [String],
-    default: [],
+    type: String,
+    default: "",
   },
   groupName: {
     type: String,

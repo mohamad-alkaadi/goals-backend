@@ -110,7 +110,7 @@ exports.getSentAndReceivedFriendRequests = async (userId) => {
     .select("from");
 
   const receivedFriendRequests = receivedFriendRequestsRaw.map((req) => {
-    return { _id: req.from._id.toString(), name: req.from.name };
+    return { _id: req.from._id.toString(), name: req.from.name, email: req.from.email };
   });
 
   const sentFriendRequestsRaw = await FriendRequest.find({
@@ -123,7 +123,7 @@ exports.getSentAndReceivedFriendRequests = async (userId) => {
     .select("to");
 
   const sentFriendRequests = sentFriendRequestsRaw.map((req) => {
-    return { _id: req.to._id.toString(), name: req.to.name };
+    return { _id: req.to._id.toString(), name: req.to.name, email: req.to.email };
   });
 
   return { receivedFriendRequests, sentFriendRequests };
