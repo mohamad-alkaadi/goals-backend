@@ -46,6 +46,10 @@ const goalsSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  sharedWithName: {
+    type: String,
+    default: "",
+  },
   groupName: {
     type: String,
     default: "ungrouped",

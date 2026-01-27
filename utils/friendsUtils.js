@@ -16,6 +16,36 @@ exports.findUserByEmail = async (res, email) => {
   return userId;
 };
 
+exports.findUserEmailById = async (res, id) => {
+  const user = await User.findOne({ _id: id });
+  if (!user) {
+    await resUtils.sendResponseWithoutData(
+      res,
+      400,
+      "fail",
+      "no user with this id"
+    );
+    return false;
+  }
+  return user.email;
+};
+
+exports.findUserNameById = async (res, id) => {
+  const user = await User.findOne({ _id: id });
+  console.log("hehe")
+  console.log(user)
+  if (!user) {
+    await resUtils.sendResponseWithoutData(
+      res,
+      400,
+      "fail",
+      "no user with this id"
+    );
+    return false;
+  }
+  return user.name;
+};
+
 exports.checkForExistingRequest = async (res, userOne, userTwo) => {
   const requestAlreadySent = await FriendRequest.findOne({
     from: userOne,
