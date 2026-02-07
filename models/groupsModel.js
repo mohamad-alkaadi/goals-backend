@@ -4,7 +4,14 @@ const groupsSchema = mongoose.Schema({
   name: {
     type: String,
     default: "ungrouped",
+    unique: true
   },
+  slug: {
+    type: String,
+    default: "ungrouped",
+    unique: true
+  },
+
   userId: {
     type: String,
     required: [true, "you can't add a goal without user id"],

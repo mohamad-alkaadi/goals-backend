@@ -12,7 +12,6 @@ exports.createNewGoal = catchAsync(async (req, res, next) => {
     req.body.sharedWithName = await friendsUtils.findUserNameById(res, req.body.sharedWith)
 
   const newGoal = await goalsModel.create(req.body)
-  console.log("newGoal: ", newGoal)
   if (req.body.shared) {
     const tempId = req.body.userId
     req.body.userId = req.body.sharedWith
@@ -29,7 +28,17 @@ exports.createNewGoal = catchAsync(async (req, res, next) => {
 
 exports.getAllGoals = catchAsync(async (req, res, next) => {
   await goalsUtils.checkForDueDate(req)
-  const goals = await goalsModel.find({ userId: req.user._id })
+  const groupNameFromUrl = req.query.group
+  let goals
+  if (groupNameFromUrl === 'overdue')
+    goals = await goalsModel.find({ userId: req.user._id, groupName: groupNameFromUrl })
+  else if (groupNameFromUrl === 'shared')
+    goals = await goalsModel.find({ userId: req.user._id, shared: true })
+  else if (groupNameFromUrl === 'completed')
+    goals = await goalsModel.find({ userId: req.user._id, completed: true })
+  else
+    goals = await goalsModel.find({ userId: req.user._id, groupName: groupNameFromUrl })
+
   res.status(200).json({
     status: "success",
     data: goals,
