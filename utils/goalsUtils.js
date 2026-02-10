@@ -4,13 +4,13 @@ const Goals = require("../models/goalsModel")
 exports.checkForDueDate = async (req) => {
   await Goals.updateMany(
     {
-      userId: req.body.user,
+      userId: req.user._id,
       dueDateActive: true,
       completed: false,
-      date: { $lte: Date.now() },
+      dueDate: { $lte: new Date() },
     },
     {
-      overDue: true,
+      $set: { overDue: true } // Use $set operator for clarity
     }
   )
 }
