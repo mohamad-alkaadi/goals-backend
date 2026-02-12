@@ -31,7 +31,7 @@ exports.getAllGoals = catchAsync(async (req, res, next) => {
   const groupNameFromUrl = req.query.group
   let goals
   if (groupNameFromUrl === 'overdue')
-    goals = await goalsModel.find({ userId: req.user._id, groupName: groupNameFromUrl })
+    goals = await goalsModel.find({ userId: req.user._id, overDue: true })
   else if (groupNameFromUrl === 'shared')
     goals = await goalsModel.find({ userId: req.user._id, shared: true })
   else if (groupNameFromUrl === 'completed')

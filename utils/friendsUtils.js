@@ -32,8 +32,6 @@ exports.findUserEmailById = async (res, id) => {
 
 exports.findUserNameById = async (res, id) => {
   const user = await User.findOne({ _id: id });
-  console.log("hehe")
-  console.log(user)
   if (!user) {
     await resUtils.sendResponseWithoutData(
       res,
