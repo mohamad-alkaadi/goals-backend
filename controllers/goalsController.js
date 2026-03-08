@@ -6,8 +6,6 @@ const friendsUtils = require("../utils/friendsUtils.js")
 
 exports.createNewGoal = catchAsync(async (req, res, next) => {
   req.body.userId = req.user._id
-  //req.body.groupId = await groupUtils.findOrCreateGroup(req)
-  //console.log("findOrCreateGroup: ", findOrCreateGroup)
   if (req.body.shared)
     req.body.sharedWithName = await friendsUtils.findUserNameById(res, req.body.sharedWith)
 

@@ -84,8 +84,6 @@ exports.addFriendBothWays = async (user1, user2) => {
 };
 
 const deleteFriendRequest = async (user1, user2) => {
-  console.log("hi");
-
   await FriendRequest.findOneAndDelete({
     from: user1,
     to: user2,
